@@ -1,4 +1,15 @@
 import obd,time
+import time
+from threading import Timer
+from subprocess import call
+import itertools
+import serial
+import re
+import MySQLdb
+import os
+
+conn = MySQLdb.connect("localhost","rasp","raspberry","virtualInspector" )
+ctrl=conn.cursor()
 #from obd import OBDCommands
 
 # OBD setup
@@ -42,6 +53,13 @@ while True:
         print speed_float[0]
         #print(speed_float[0],10)        
         #print(res.unit)
+	try:
+		self.ctrl.execute("insert into {tn}('rpm','speed') values({s1},{s2})")\
+		.format(tn="value",s1=int(rpm_float[0]),s1=int(speed_float[0]))
+		self.conn.commit()
+	except:
+        print "rolling back"
+		self.conn.rollback()
     except Exception as ex:
         print("Error: " + str(ex))
     time.sleep(0.5)
